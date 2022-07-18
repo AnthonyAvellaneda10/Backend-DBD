@@ -41,7 +41,7 @@ public class DaoImpl implements Dao {
 				resultado.close();
 			if (sentencia != null)
 				sentencia.close();
-			// this.conexion.commit();
+			 //this.conexion.commit();
 			this.conexion.close();
 			this.conexion = null;
 		} catch (SQLException throwables) {
