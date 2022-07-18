@@ -2,12 +2,12 @@ package com.web.transporte.dto.model;
 
 import java.util.Date;
 
-public class Usuario extends Persona{	
+public class UsuarioInicio extends Persona{	
 	private String cod_usuario;
 	private Date fecha_ingreso;
 	private String contrasenia;
 		
-	public Usuario() {
+	public UsuarioInicio() {
 		super();
 	}
 
