@@ -1,6 +1,6 @@
 package com.web.transporte.dto.model;
 
-public class Servicio {
+public class ServicioCotizacion {
 	private Integer codigoServicio;
 	private String nombreServicio;
 	private String tipoServicio;

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import com.web.transporte.dto.model.Cotizacion;
 import com.web.transporte.dto.model.NombreServicio;
 import com.web.transporte.dto.model.Persona;
-import com.web.transporte.dto.model.Servicio;
+import com.web.transporte.dto.model.ServicioCotizacion;
 import com.web.transporte.dto.model.TipoCarga;
 import com.web.transporte.dto.model.TipoServicio;
 import com.web.transporte.dto.model.UsuarioLogin;
@@ -225,7 +225,7 @@ public class DaoImpl implements Dao {
 	
 	// CREAR SERVICIO
 	public int crearServicio(String tipoServicio, String nombreServicio, String correo) {
-		Servicio servicio = new Servicio();
+		ServicioCotizacion servicio = new ServicioCotizacion();
 		int resultado = 0;
 		try {
 			obtenerConexion();
