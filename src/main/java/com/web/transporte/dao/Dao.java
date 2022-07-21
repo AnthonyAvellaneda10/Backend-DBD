@@ -13,6 +13,9 @@ public interface Dao {
 	public List<Persona> obtenerPersona();
 	
 	public Integer existeUsuario(String email, String contrasenia);
+	public Integer existeUsuario2(String email);
+	
+	public String obtenerPasswordBD(String correo);
 	
 	public Integer existePersona(String dni, String correo, String nombres, String apellidoPaterno, String apellidoMaterno, String nroCelular);
 

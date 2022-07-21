@@ -3,6 +3,7 @@ package com.web.transporte.servicio;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,9 +35,53 @@ public class ServicioImpl implements Servicio {
 			existeUsuario = true;
 		return existeUsuario;
 	}
+	
+	
+	private boolean existeUsuario2(String correo) {
+		boolean existeUsuario = false;
+		if (dao.existeUsuario2(correo) == 1)
+			existeUsuario = true;
+		return existeUsuario;
+	}
 
+	private String obtenerPasswordBD(String correo) {
+		String password = dao.obtenerPasswordBD(correo);
+		System.out.println("Password: " + password);
+		return password;
+	}
+	
+	
 	@Override
 	public Persona autenticarUsuario(UsuarioLogin usuarioLogin) {
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		Persona persona = null;
+		
+		//boolean existUsuario = existeUsuario(usuarioLogin.getCorreo(), usuarioLogin.getContrasenia());
+		
+		String passwordbd = obtenerPasswordBD(usuarioLogin.getCorreo());
+		if (passwordbd == null) {
+			throw new NotFoundException("Usuario no existe");
+		}else {
+			boolean isPasswordMatch = passwordEncoder.matches(usuarioLogin.getContrasenia(), passwordbd);
+			System.out.println("isPasswordMatch: " + isPasswordMatch);
+			if(isPasswordMatch) {
+				persona = dao.obtenerNombres(usuarioLogin);
+			}
+			else {
+				throw new NotFoundException("Usuario no existe");
+			}
+		}
+		return persona;
+	}
+	
+	// COPIA
+	/*@Override
+	public Persona autenticarUsuario(UsuarioLogin usuarioLogin) {
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//		String encodedPassword = passwordEncoder.encode(usuarioLogin.getContrasenia());
+//
+		boolean isPasswordMatch = passwordEncoder.matches(usuarioLogin.getContrasenia(), encodedPassword);
+		
 		boolean existUsuario = existeUsuario(usuarioLogin.getCorreo(), usuarioLogin.getContrasenia());
 		if (!existUsuario) {
 			throw new NotFoundException("Usuario no existe");
@@ -47,7 +92,8 @@ public class ServicioImpl implements Servicio {
 			throw new NotFoundException("Usuario y/o contraseña incorrecta");
 		}
 		return persona;
-	}
+	}*/
+	
 
 	// REGISTRO DE USUARIO
 	private boolean existePersona(String dni, String correo, String nombres, String apellidoPaterno,
@@ -59,25 +105,23 @@ public class ServicioImpl implements Servicio {
 	}
 
 	public void registrarUsuario(RegistroUsuario usuarioRegistro) {
+		// ENCRIPTA LA CONTRASEÑA
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		String encodedPassword = passwordEncoder.encode(usuarioRegistro.getContrasenia());
+				
 		boolean existenciaPersona = existePersona(usuarioRegistro.getDni(), usuarioRegistro.getCorreo(),
 				usuarioRegistro.getNombres(), usuarioRegistro.getApellido_paterno(),
 				usuarioRegistro.getApellido_materno(), usuarioRegistro.getNro_celular());
+		
 		if (!existenciaPersona) {
 			dao.crearPersona(usuarioRegistro.getDni(), usuarioRegistro.getCorreo(), usuarioRegistro.getNombres(),
 					usuarioRegistro.getApellido_paterno(), usuarioRegistro.getApellido_materno(),
 					usuarioRegistro.getNro_celular());
-			dao.crearUsuario(usuarioRegistro.getCorreo(), usuarioRegistro.getContrasenia(), usuarioRegistro.getDni());
+			dao.crearUsuario(usuarioRegistro.getCorreo(), encodedPassword, usuarioRegistro.getDni());
 		} else {
-			if (existeUsuario(usuarioRegistro.getCorreo(), usuarioRegistro.getContrasenia())) {
+			if (existeUsuario2(usuarioRegistro.getCorreo())) {
 				throw new NotFoundException("Este usuario ya existe");
-			} else {
-				dao.crearPersona(usuarioRegistro.getDni(), usuarioRegistro.getCorreo(), usuarioRegistro.getNombres(),
-						usuarioRegistro.getApellido_paterno(), usuarioRegistro.getApellido_materno(),
-						usuarioRegistro.getNro_celular());
-
-				dao.crearUsuario(usuarioRegistro.getCorreo(), usuarioRegistro.getContrasenia(),
-						usuarioRegistro.getDni());
-			}
+			} 
 		}
 	}
 

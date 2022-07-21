@@ -107,6 +107,48 @@ public class DaoImpl implements Dao {
 		}
 		return filas;
 	}
+	
+	// EXISTE USUARIO2
+	public Integer existeUsuario2(String email) {
+		Integer filas = null;
+		try {
+			obtenerConexion();
+			String sql = "SELECT COUNT(*)" + " FROM usuario" + " WHERE codigo_usuario = ? ";
+			PreparedStatement sentencia = conexion.prepareStatement(sql);
+			sentencia.setString(1, email);
+			ResultSet resultado = sentencia.executeQuery();
+			if (resultado.next()) {
+				filas = resultado.getInt(1);
+			}
+			sentencia.close();
+			cerrarConexionSinCommit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return filas;
+	}
+	
+	public String obtenerPasswordBD(String correo) {
+		String passwordBD = null;
+		try {
+			obtenerConexion();
+			String sql = "SELECT contrasenia" + " FROM usuario" + " WHERE codigo_usuario = ?";
+
+			PreparedStatement sentencia = conexion.prepareStatement(sql);
+			sentencia.setString(1, correo);
+			ResultSet resultado = sentencia.executeQuery();
+			// usuarioLogin = new UsuarioLogin();
+			while (resultado.next()) {
+				passwordBD = resultado.getString("contrasenia");
+			}
+			sentencia.close();
+			cerrarConexionSinCommit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return passwordBD;
+	}
+	
 
 	public Persona obtenerNombres(UsuarioLogin usuarioLogin) {
 		Persona respuestaUsuario = null;
