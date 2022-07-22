@@ -11,6 +11,7 @@ import com.web.transporte.dto.model.RegistroUsuario;
 import com.web.transporte.dto.model.TipoCarga;
 import com.web.transporte.dto.model.TipoReclamo;
 import com.web.transporte.dto.model.TipoServicio;
+import com.web.transporte.dto.model.UnidadTransporteTelefono;
 import com.web.transporte.dto.model.UsuarioLogin;
 
 public interface Servicio {
@@ -39,5 +40,15 @@ public interface Servicio {
 		public List<TipoReclamo> obtenerTiposReclamos();
 
 		public List<Reclamo> obtenerReclamosUsuario(String codigo_usuario);
+		
+		// GESTION DE SEGUIMIENTO
+		public List<UnidadTransporteTelefono> obtenerUnidadTransporteTelefonos(UnidadTransporteTelefono unidadTransporteTelefono);
+		
+		//TRAER RECLAMOS 
+		public List<Reclamo> obtenerReclamos(Reclamo reclamo);
+
+		//RESPUESTA RECLAMOS
+		public Reclamo respuestReclamo(Reclamo reclamo);
+		
 		
 }

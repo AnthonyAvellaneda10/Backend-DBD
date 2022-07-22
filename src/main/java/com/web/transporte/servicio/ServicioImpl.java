@@ -17,6 +17,7 @@ import com.web.transporte.dto.model.RegistroUsuario;
 import com.web.transporte.dto.model.TipoCarga;
 import com.web.transporte.dto.model.TipoReclamo;
 import com.web.transporte.dto.model.TipoServicio;
+import com.web.transporte.dto.model.UnidadTransporteTelefono;
 import com.web.transporte.dto.model.UsuarioLogin;
 import com.web.transporte.exception.NotFoundException;
 
@@ -211,4 +212,17 @@ public class ServicioImpl implements Servicio {
 	public List<Reclamo> obtenerReclamosUsuario(String codigo_usuario){
 		return dao.obtenerReclamosUsuario(codigo_usuario);
 	}
+	
+	// GESTION DE SEGUIMIENTO
+		public List<UnidadTransporteTelefono> obtenerUnidadTransporteTelefonos(UnidadTransporteTelefono unidadTransporteTelefono) {
+			return dao.obtenerUnidadTransporteTelefonos(unidadTransporteTelefono);
+		}
+		//TRAER RECLAMOS 
+		public List<Reclamo> obtenerReclamos(Reclamo reclamo) {
+			return dao.obtenerReclamos(reclamo);
+		}
+		//RESPUESTA RECLAMOS
+		public Reclamo respuestReclamo(Reclamo reclamo) {
+			return dao.respuestReclamo(reclamo);
+		}
 }

@@ -17,9 +17,13 @@ import com.web.transporte.dto.model.NombreServicio;
 import com.web.transporte.dto.model.Persona;
 import com.web.transporte.dto.model.Reclamo;
 import com.web.transporte.dto.model.ServicioCotizacion;
+import com.web.transporte.dto.model.ServicioTransporte;
 import com.web.transporte.dto.model.TipoCarga;
 import com.web.transporte.dto.model.TipoReclamo;
 import com.web.transporte.dto.model.TipoServicio;
+import com.web.transporte.dto.model.UnidadTransporte;
+import com.web.transporte.dto.model.UnidadTransporteTelefono;
+import com.web.transporte.dto.model.UsuarioInicio;
 import com.web.transporte.dto.model.UsuarioLogin;
 
 @Repository
@@ -571,5 +575,102 @@ public class DaoImpl implements Dao {
 					resultado.getString("rpta_reclamo"));
 			return retorno;
 		}
+		
+		// ADMINISTRATIVO
+		// GESTION DE SEGUIMIENTO
+		public List<UnidadTransporteTelefono> obtenerUnidadTransporteTelefonos(UnidadTransporteTelefono unidadTransporteTelefono) {
+	        List<UnidadTransporteTelefono> lista = new ArrayList<>();
+	        try {
+	            obtenerConexion();
+	            StringBuilder sb = new StringBuilder();
+	            sb.append(" select ut.codigo_transporte , utf.telefono , ut.tipo_transporte").
+	            append(" from Unidad_Transporte ut inner join Unidad_Transporte_telefono utf").
+				append(" on (ut.codigo_transporte=utf.codigo_transporte)").
+				append(" where ut.codigo_transporte :: varchar like ? or utf.telefono :: varchar like ? or ut.tipo_transporte like ? ").
+				append(" order by ut.codigo_transporte");
+				PreparedStatement sentencia = conexion.prepareStatement(sb.toString());
+				sentencia.setString(1,  "%" + unidadTransporteTelefono.getUnidadTransporte().getCodigo_transporte()+ "%");
+				sentencia.setString(2,  "%" + unidadTransporteTelefono.getTelefono()+ "%");
+				sentencia.setString(3,  "%" + unidadTransporteTelefono.getUnidadTransporte().getTipo_transporte()+ "%");
+	            ResultSet resultado= sentencia.executeQuery();
+
+	            while (resultado.next()){
+					UnidadTransporte unidadTransporte=new UnidadTransporte();
+	                unidadTransporte.setCodigo_transporte(resultado.getString("codigo_transporte"));
+					unidadTransporte.setTipo_transporte(resultado.getString("tipo_transporte"));
+					unidadTransporteTelefono.setTelefono(resultado.getString("telefono"));
+					unidadTransporteTelefono.setUnidadTransporte(unidadTransporte);
+	                lista.add(unidadTransporteTelefono);
+	            }
+	            cerrarConexionConCommit();
+	        } catch (SQLException throwables) {
+	            throwables.printStackTrace();
+	        }
+	        return lista;
+	    }
+		
+		//CONSULTA DE RECLAMOS SOLICITADOS
+
+		public List<Reclamo> obtenerReclamos(Reclamo reclamo) {
+	        List<Reclamo> lista = new ArrayList<>();
+	        try {
+	            obtenerConexion();
+	            StringBuilder sb = new StringBuilder();
+	            sb.append(" select u.codigo_usuario , p.nombres, p.apellido_pat, p.apellido_mat , r.tipo_reclamo , r.descripcion ").
+	            append(" from persona p inner join usuario u	on (p.dni=u.dni) inner join servicio s ").
+				append(" on (u.codigo_usuario=s.codigo_usuario) inner join reclamo r on (s.codigo_servicio=r.codigo_servicio) ").
+				append(" where u.codigo_usuario :: varchar like ? or p.nombres like ? or p.apellido_pat like ? ").
+				append(" or p.apellido_mat like ? or r.tipo_reclamo like ? order by u.codigo_usuario");
+				/*Statement sentencia = conexion.createStatement();
+	            ResultSet resultado = sentencia.executeQuery(sb.toString()); */
+				PreparedStatement sentencia = conexion.prepareStatement(sb.toString());
+	            sentencia.setString(1, "%" +  reclamo.getServicioCotizacion().getUsuario().getCod_usuario() + "%" );
+				sentencia.setString(2, "%" +  reclamo.getServicioCotizacion().getUsuario().getPersona().getNombres() + "%");
+				sentencia.setString(3, "%" +  reclamo.getServicioCotizacion().getUsuario().getPersona().getApellido_paterno() + "%");
+				sentencia.setString(4, "%" +  reclamo.getServicioCotizacion().getUsuario().getPersona().getApellido_materno() + "%");
+				sentencia.setString(5, "%" +  reclamo.getTipo_reclamo() + "%");
+	            ResultSet resultado= sentencia.executeQuery();
+	            while (resultado.next()){
+					UsuarioInicio usuario=new UsuarioInicio();
+					ServicioCotizacion servicio=new ServicioCotizacion();
+					Persona persona=new Persona();
+					
+					usuario.setCod_usuario(resultado.getString("codigo_usuario"));
+					persona.setNombres(resultado.getString("nombres"));
+					persona.setApellido_paterno(resultado.getString("apellido_pat"));
+					persona.setApellido_materno(resultado.getString("apellido_mat"));
+					reclamo.setTipo_reclamo(resultado.getString("tipo_reclamo"));
+					reclamo.setDescripcion(resultado.getString("descripcion"));
+					usuario.setPersona(persona);
+					servicio.setUsuario(usuario);
+					reclamo.setServicioCotizacion(servicio);
+					lista.add(reclamo);
+	            }
+	            cerrarConexionConCommit();
+	        } catch (SQLException throwables) {
+	            throwables.printStackTrace();
+	        }
+	        return lista;
+	    }
+
+		//RESPUESTA RECLAMO
+		public Reclamo respuestReclamo(Reclamo reclamo) {
+	        try {
+	            obtenerConexion();
+	            StringBuilder sb = new StringBuilder();
+	            sb.append(" update reclamo set rpta_reclamo = ? ").
+	            append(" where codigo_reclamo = (select r.codigo_reclamo from persona p inner join usuario u ").
+				append(" on (p.dni=u.dni) inner join servicio s on (u.codigo_usuario=s.codigo_usuario)").
+				append(" inner join reclamo r on (s.codigo_servicio=r.codigo_servicio) order by u.codigo_usuario  asc limit 1)");
+	            PreparedStatement sentencia = conexion.prepareStatement(sb.toString());
+	            sentencia.setString(1, reclamo.getRpta_reclamo());
+	            sentencia.executeUpdate();
+	            sentencia.close();
+	            cerrarConexionConCommit();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return reclamo;
+	    }
 
 }

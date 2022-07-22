@@ -1,20 +1,52 @@
 package com.web.transporte.dto.model;
 
 public class Reclamo {
+	private Integer codigo_reclamo;
 	 private String tipo_reclamo;
 	    private String descripcion;
 	    private String rpta_reclamo;
 	    private ServicioTransporte servicioTransporte ;
+	    private ServicioCotizacion servicioCotizacion;
 	    private PersonalReclamo personal;
 
-	    public Reclamo(String tipo_reclamo, String descripcion, ServicioTransporte servicioTransporte, PersonalReclamo personal) {
-	        this.tipo_reclamo = tipo_reclamo;
-	        this.descripcion = descripcion;
-	        this.servicioTransporte = servicioTransporte;
-	        this.personal = personal;
-	    }
+	    public Reclamo(Integer codigo_reclamo, String tipo_reclamo, String descripcion, String rpta_reclamo,
+				ServicioTransporte servicioTransporte, ServicioCotizacion servicioCotizacion,
+				PersonalReclamo personal) {
+			super();
+			this.codigo_reclamo = codigo_reclamo;
+			this.tipo_reclamo = tipo_reclamo;
+			this.descripcion = descripcion;
+			this.rpta_reclamo = rpta_reclamo;
+			this.servicioTransporte = servicioTransporte;
+			this.servicioCotizacion = servicioCotizacion;
+			this.personal = personal;
+		}
 
-	    public Reclamo(String descripcion, String rpta_reclamo) {
+
+
+
+		public ServicioCotizacion getServicioCotizacion() {
+			return servicioCotizacion;
+		}
+
+
+
+
+		public void setServicioCotizacion(ServicioCotizacion servicioCotizacion) {
+			this.servicioCotizacion = servicioCotizacion;
+		}
+
+
+
+
+		public Integer getCodigo_reclamo() {
+			return codigo_reclamo;
+		}
+		public void setCodigo_reclamo(Integer codigo_reclamo) {
+			this.codigo_reclamo = codigo_reclamo;
+		}
+
+		public Reclamo(String descripcion, String rpta_reclamo) {
 	        this.descripcion = descripcion;
 	        this.rpta_reclamo = rpta_reclamo;
 	    }

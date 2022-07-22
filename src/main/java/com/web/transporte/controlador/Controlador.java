@@ -13,14 +13,17 @@ import com.web.transporte.dto.model.FormularioCotizacion;
 import com.web.transporte.dto.model.Persona;
 import com.web.transporte.dto.model.Reclamo;
 import com.web.transporte.dto.model.RegistroUsuario;
+import com.web.transporte.dto.model.UnidadTransporteTelefono;
 import com.web.transporte.dto.model.UsuarioLogin;
 import com.web.transporte.dto.rest.RespuestaListaCotizacion;
 import com.web.transporte.dto.rest.RespuestaListaReclamo;
 import com.web.transporte.dto.rest.RespuestaNombreServicio;
 import com.web.transporte.dto.rest.RespuestaPersona;
+import com.web.transporte.dto.rest.RespuestaReclamo;
 import com.web.transporte.dto.rest.RespuestaTipoCarga;
 import com.web.transporte.dto.rest.RespuestaTipoReclamo;
 import com.web.transporte.dto.rest.RespuestaTipoServicio;
+import com.web.transporte.dto.rest.RespuestaUnidadTransporteTelefono;
 import com.web.transporte.servicio.Servicio;
 
 @CrossOrigin(origins = { "*" })
@@ -122,5 +125,29 @@ public class Controlador {
 			respuestaPersona.setListaReclamoUsuario(servicio.obtenerReclamosUsuario(codigo_usuario));
 			return respuestaPersona;
 		}	
+		
+		// GESTION DE SEGUIMIENTO
+				@RequestMapping(value = "/obtener-seguimiento", method = RequestMethod.POST, 
+				consumes = "application/json;charset=utf-8", 
+				produces = "application/json;charset=utf-8")
+				public @ResponseBody RespuestaUnidadTransporteTelefono  obtRespuestaUnidadTransporteTelefono(@RequestBody UnidadTransporteTelefono unidadTransporteTelefono) {
+					RespuestaUnidadTransporteTelefono respuestaUnidadTransporteTelefono = new RespuestaUnidadTransporteTelefono();
+					respuestaUnidadTransporteTelefono.setLista(servicio.obtenerUnidadTransporteTelefonos(unidadTransporteTelefono));
+					return respuestaUnidadTransporteTelefono;
+				}
+			//BUSCAR RECLAMO
+				@RequestMapping(value = "/obtener-reclamos", method = RequestMethod.POST, consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
+					public @ResponseBody RespuestaReclamo obteneReclamos(@RequestBody Reclamo reclamo) {
+						RespuestaReclamo respuestaReclamo = new RespuestaReclamo();
+						respuestaReclamo.setLista(servicio.obtenerReclamos(reclamo));
+						return respuestaReclamo;
+					}
+			// RESPUESTA RECLAMO
+				@RequestMapping(value="/respuesta-reclamo", method=RequestMethod.POST,
+						consumes = "application/json;charset=utf-8",
+						produces = "application/json;charset=utf-8")
+				public @ResponseBody Reclamo respuestReclamo(@RequestBody Reclamo reclamo){
+					return servicio.respuestReclamo(reclamo);
+				}
 		
 }

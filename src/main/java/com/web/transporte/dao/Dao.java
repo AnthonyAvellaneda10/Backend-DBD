@@ -9,6 +9,7 @@ import com.web.transporte.dto.model.Reclamo;
 import com.web.transporte.dto.model.TipoCarga;
 import com.web.transporte.dto.model.TipoReclamo;
 import com.web.transporte.dto.model.TipoServicio;
+import com.web.transporte.dto.model.UnidadTransporteTelefono;
 import com.web.transporte.dto.model.UsuarioLogin;
 
 public interface Dao {
@@ -45,4 +46,8 @@ public interface Dao {
 
 	public List<TipoReclamo> obtenerTiposReclamos();
 	public List<Reclamo> obtenerReclamosUsuario(String codigo_usuario);
+	
+	public List<UnidadTransporteTelefono> obtenerUnidadTransporteTelefonos(UnidadTransporteTelefono unidadTransporteTelefono);
+	public List<Reclamo> obtenerReclamos(Reclamo reclamo);
+	public Reclamo respuestReclamo(Reclamo reclamo);
 }
