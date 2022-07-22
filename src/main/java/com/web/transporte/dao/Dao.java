@@ -5,7 +5,9 @@ import java.util.List;
 import com.web.transporte.dto.model.Cotizacion;
 import com.web.transporte.dto.model.NombreServicio;
 import com.web.transporte.dto.model.Persona;
+import com.web.transporte.dto.model.Reclamo;
 import com.web.transporte.dto.model.TipoCarga;
+import com.web.transporte.dto.model.TipoReclamo;
 import com.web.transporte.dto.model.TipoServicio;
 import com.web.transporte.dto.model.UsuarioLogin;
 
@@ -37,4 +39,10 @@ public interface Dao {
 	public List<TipoCarga> obtenerTipoCargas();
 	
 	public Persona obtenerDatosPersonales(String correo);
+	
+	public Reclamo agregarReclamo(Reclamo reclamo);
+	public Boolean validarExistenciaReclamo(String dni);
+
+	public List<TipoReclamo> obtenerTiposReclamos();
+	public List<Reclamo> obtenerReclamosUsuario(String codigo_usuario);
 }

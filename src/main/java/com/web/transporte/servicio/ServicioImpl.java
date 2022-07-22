@@ -12,8 +12,10 @@ import com.web.transporte.dto.model.Cotizacion;
 import com.web.transporte.dto.model.FormularioCotizacion;
 import com.web.transporte.dto.model.NombreServicio;
 import com.web.transporte.dto.model.Persona;
+import com.web.transporte.dto.model.Reclamo;
 import com.web.transporte.dto.model.RegistroUsuario;
 import com.web.transporte.dto.model.TipoCarga;
+import com.web.transporte.dto.model.TipoReclamo;
 import com.web.transporte.dto.model.TipoServicio;
 import com.web.transporte.dto.model.UsuarioLogin;
 import com.web.transporte.exception.NotFoundException;
@@ -187,5 +189,26 @@ public class ServicioImpl implements Servicio {
 	// OBTENER COTIZACIONES POR USUARIO
 	public List<Cotizacion> obtenerCotizacionUsuario(String correo){
 		return dao.obtenerCotizacionUsuario(correo);
+	}
+	
+	public Reclamo agregarReclamo(Reclamo reclamo) {
+		System.out.println(reclamo);
+
+		if(dao.validarExistenciaReclamo(reclamo.getServicioTransporte().getUsuario().getPersona().getDni())){
+			return dao.agregarReclamo(reclamo);
+		}
+		else{
+
+			return new Reclamo();
+
+		}
+	}
+
+	public List<TipoReclamo> obtenerTiposReclamos(){
+		return dao.obtenerTiposReclamos();
+	}
+
+	public List<Reclamo> obtenerReclamosUsuario(String codigo_usuario){
+		return dao.obtenerReclamosUsuario(codigo_usuario);
 	}
 }

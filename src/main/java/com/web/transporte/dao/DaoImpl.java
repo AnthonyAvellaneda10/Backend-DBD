@@ -15,8 +15,10 @@ import org.springframework.stereotype.Repository;
 import com.web.transporte.dto.model.Cotizacion;
 import com.web.transporte.dto.model.NombreServicio;
 import com.web.transporte.dto.model.Persona;
+import com.web.transporte.dto.model.Reclamo;
 import com.web.transporte.dto.model.ServicioCotizacion;
 import com.web.transporte.dto.model.TipoCarga;
+import com.web.transporte.dto.model.TipoReclamo;
 import com.web.transporte.dto.model.TipoServicio;
 import com.web.transporte.dto.model.UsuarioLogin;
 
@@ -456,5 +458,118 @@ public class DaoImpl implements Dao {
 		}		
 		return respuestaUsuario;
 	}
+	
+	//AGREGAR RECLAMO
+		public Reclamo agregarReclamo(Reclamo reclamo) {
+
+			String SQL = " INSERT INTO reclamo(tipo_reclamo, descripcion, " +
+					" codigo_personal, codigo_servicio) \n" +
+					" VALUES (?,?, \n" +
+					" (SELECT p2.codigo_personal from personal p2 where p2.cargo = ? LIMIT 1), \n" +
+					" (SELECT s.codigo_servicio from servicio s \n" +
+					" inner join usuario u \n" +
+					" on u.codigo_usuario  = s.codigo_usuario\n" +
+					" inner join persona p \n" +
+					" on p.dni  = u.dni \n" +
+					" where p.dni = ?)) ";
+
+
+			try {
+				obtenerConexion();
+				PreparedStatement sentencia = this.conexion.prepareStatement(SQL);
+				sentencia.setString(1,reclamo.getTipo_reclamo());
+				sentencia.setString(2,reclamo.getDescripcion());
+				sentencia.setString(3,reclamo.getPersonal().getCargo());
+				sentencia.setString(4,reclamo.getServicioTransporte().getUsuario().getPersona().getDni());
+				sentencia.executeUpdate();
+				cerrarConexion(null,sentencia);
+			} catch (SQLException throwables) {
+				throwables.printStackTrace();
+			}
+			return reclamo;
+		}
+
+		//VALIDAR RECLAMO
+		public Boolean validarExistenciaReclamo(String dni) {
+			Boolean encontrado = false;
+			String SQL = " select p.nombres , p.correo , p.nro_celular \n" +
+					" from persona p\n" +
+					" inner join usuario u \n" +
+					" on p.dni  = u.dni  \n" +
+					" where p.dni = ? ";
+
+			try {
+				obtenerConexion();
+				PreparedStatement sentencia = this.conexion.prepareStatement(SQL);
+
+				System.out.println(dni);
+
+				sentencia.setString(1,dni);
+
+				ResultSet resultado = sentencia.executeQuery();
+				while(resultado.next()){
+					encontrado = true;
+				}
+				cerrarConexion(resultado,sentencia);
+			} catch (SQLException throwables) {
+				throwables.printStackTrace();
+			}
+			return encontrado;
+		}
+
+		private TipoReclamo obtenerTipoReclamos(ResultSet resultado) throws SQLException {
+			TipoReclamo retorno = new TipoReclamo(resultado.getInt("codigo_tipo_reclamo"),
+					resultado.getString("nombre_tipo_reclamo"));
+			return retorno;
+		}
+
+		public List<TipoReclamo> obtenerTiposReclamos() {
+			List<TipoReclamo> lista = new ArrayList<>();
+
+			String sql = " SELECT codigo_tipo_reclamo, nombre_tipo_reclamo" + " FROM tipo_reclamos";
+
+			try {
+				obtenerConexion();
+				Statement sentencia = conexion.createStatement();
+				ResultSet resultado = sentencia.executeQuery(sql);
+				while (resultado.next()) {
+					lista.add(obtenerTipoReclamos(resultado));
+				}
+				cerrarConexion(resultado, sentencia);
+			} catch (SQLException throwables) {
+				throwables.printStackTrace();
+			}
+			return lista;
+		}
+
+		public List<Reclamo> obtenerReclamosUsuario(String codigo_usuario){
+			List<Reclamo> lista = new ArrayList<>();
+
+			String sql = " select r.descripcion, r.rpta_reclamo\n" +
+					" from reclamo r\n" +
+					" inner join servicio s \n" +
+					" on s.codigo_servicio  = r.codigo_servicio \n" +
+					" where s.codigo_usuario = ? ";
+
+			try {
+				obtenerConexion();
+				PreparedStatement sentencia = conexion.prepareStatement(sql);
+				sentencia.setString(1, codigo_usuario);
+				ResultSet resultado = sentencia.executeQuery();
+				while (resultado.next()) {
+					lista.add(obtenerReclamosUsuario(resultado));
+				}
+				cerrarConexion(resultado, sentencia);
+			} catch (SQLException throwables) {
+				throwables.printStackTrace();
+			}
+			return lista;
+		}
+
+		private Reclamo obtenerReclamosUsuario(ResultSet resultado) throws SQLException {
+			Reclamo retorno = new Reclamo(resultado.getString("descripcion"),
+					resultado.getString("rpta_reclamo"));
+			return retorno;
+		}
 
 }

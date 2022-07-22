@@ -11,12 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.web.transporte.dto.model.FormularioCotizacion;
 import com.web.transporte.dto.model.Persona;
+import com.web.transporte.dto.model.Reclamo;
 import com.web.transporte.dto.model.RegistroUsuario;
 import com.web.transporte.dto.model.UsuarioLogin;
 import com.web.transporte.dto.rest.RespuestaListaCotizacion;
+import com.web.transporte.dto.rest.RespuestaListaReclamo;
 import com.web.transporte.dto.rest.RespuestaNombreServicio;
 import com.web.transporte.dto.rest.RespuestaPersona;
 import com.web.transporte.dto.rest.RespuestaTipoCarga;
+import com.web.transporte.dto.rest.RespuestaTipoReclamo;
 import com.web.transporte.dto.rest.RespuestaTipoServicio;
 import com.web.transporte.servicio.Servicio;
 
@@ -89,4 +92,35 @@ public class Controlador {
 			respuestaPersona.setListaCotizacionUsuario(servicio.obtenerCotizacionUsuario(correo));
 			return respuestaPersona;
 		}
+		//INSERCION DE UN NUEVO RECLAMO
+		@RequestMapping(
+				value = "/agregar-reclamoo",method = RequestMethod.POST,
+				consumes = "application/json;charset=utf-8",
+				produces = "application/json;charset=utf-8"
+		)
+		public @ResponseBody Reclamo agregarReclamo(@RequestBody Reclamo reclamo){
+
+			return servicio.agregarReclamo(reclamo);
+		}
+
+		//OBTENER LOS TIPOS DE RECLAMO
+		@RequestMapping(value = "/obtener-tipo-reclamos", method = RequestMethod.GET,
+				produces = "application/json;charset=utf-8")
+		public @ResponseBody RespuestaTipoReclamo obtenerTipoReclamos() {
+
+			RespuestaTipoReclamo respuestaPersona = new RespuestaTipoReclamo();
+			respuestaPersona.setListaTipoReclamo(servicio.obtenerTiposReclamos());
+			return respuestaPersona;
+		}
+
+		//OBTENER RECLAMOS POR CADA USUARIO
+		@RequestMapping(value = "/obtener-reclamo-usuario/{codigo_usuario}",
+						method = RequestMethod.GET,
+						produces = "application/json;charset=utf-8")
+		public @ResponseBody RespuestaListaReclamo obtenerReclamosUsuario(@PathVariable("codigo_usuario")String codigo_usuario) {
+			RespuestaListaReclamo respuestaPersona = new RespuestaListaReclamo();
+			respuestaPersona.setListaReclamoUsuario(servicio.obtenerReclamosUsuario(codigo_usuario));
+			return respuestaPersona;
+		}	
+		
 }
